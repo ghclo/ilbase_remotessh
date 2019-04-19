@@ -171,11 +171,10 @@ def create_deploy_webapp(cmd, name, location=None, sku=None, dryrun=False):
     else:
         logger.warning("App '%s' already exists", name)
         if do_deployment:
-        # we check to see if we the build app setting already exists
-        # setting the appsettings causes a app restart so we avoid if not needed
+            # setting the appsettings causes a app restart so we avoid if not needed
             set_build_appSetting = False
             _app_settings = get_app_settings(cmd, rg_name, name)
-            if all(not d for d in _app_settings): # check if empty
+            if all(not d for d in _app_settings):
                 set_build_appSetting = True
             elif '"name": "SCM_DO_BUILD_DURING_DEPLOYMENT", "value": "true"' not in json.dumps(_app_settings[0]):
                 set_build_appSetting = True
@@ -225,11 +224,7 @@ def _ping_scm_site(cmd, resource_group, name):
     scm_url = _get_scm_url(cmd, resource_group, name)
     import urllib3
     authorization = urllib3.util.make_headers(basic_auth='{}:{}'.format(user_name, password))
-    # Avoiding SSL Check for ASE environment (Self Signed Certificate) 
-    if ".scm.azurewebsites.net" not in scm_url:
-        requests.get(scm_url + '/api/settings', headers=authorization, verify=False)
-    else:
-        requests.get(scm_url + '/api/settings', headers=authorization)
+    requests.get(scm_url + '/api/settings', headers=authorization)
 
 
 def _get_app_url(cmd, rg_name, app_name):
